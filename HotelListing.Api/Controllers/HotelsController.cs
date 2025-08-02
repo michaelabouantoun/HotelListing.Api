@@ -8,6 +8,7 @@ namespace HotelListing.Api.Controllers
     [ApiController]
     public class HotelsController : ControllerBase
     {
+
         private static List<Hotel> hotels = new List<Hotel>
         {
             new Hotel{Id=1,Name="Grand Plaza",Address="123 Main St",Rating=4.5},
