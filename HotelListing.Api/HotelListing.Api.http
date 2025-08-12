@@ -9,7 +9,7 @@ Content-Type: application/json
 
 {
   
-  "id": 1,
+  "id": 5,
   "name": "Grand Plaza",
   "address": "123 Main St",
   "rating": 4.5
@@ -18,7 +18,7 @@ Content-Type: application/json
 
 ###
 
-@id=4
+@id=99
 DELETE {{HotelListing.Api_HostAddress}}/api/hotels/{{id}}
 
 ###
@@ -31,7 +31,7 @@ PUT {{HotelListing.Api_HostAddress}}/api/hotels/{{id}}
 Content-Type: application/json
 
 {
-  "id": 1,
+  "id": 9,
   "name": "Test Hotel",
   "address": "123 Main St",
   "rating": 4.5
