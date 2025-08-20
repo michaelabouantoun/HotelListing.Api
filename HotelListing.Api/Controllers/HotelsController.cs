@@ -1,4 +1,5 @@
 ﻿using HotelListing.Api.Data;
+using HotelListing.Api.DTOs.Hotel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,25 +12,35 @@ public class HotelsController(HotelListingDbContext context) : ControllerBase
 
     // GET: api/Hotels
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Hotel>>> GetHotels()
+    public async Task<ActionResult<IEnumerable<GetHotelsDto>>> GetHotels()
     {
-        //SELECT * FROM Hotels LEFT JOIN Countries ON hotels.CountryId = Countries.CountryId
-
-        return await context.Hotels
-        //    .Include(h=>h.Country)  //Eager loading the country navigation property //better to include in the get a specific hotel
+        
+        var hotels=await context.Hotels
+            .Select(h=>new GetHotelsDto(h.Id,h.Name,h.Address,h.Rating,h.CountryId))
             .ToListAsync();
+       return Ok(hotels);
     }
 
     // GET: api/Hotels/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<Hotel>> GetHotel(int id)
+    public async Task<ActionResult<GetHotelDto>> GetHotel(int id)
     {
-        //SELECT * FROM Hotels
-        //LEFT JOIN Countries ON Hotels.CountryId=Countries.CountryId
-        //WHERE Hotels.Id = @id
+        //SELECT h.Id,
+        //h.Name,
+        //h.Address,
+        //h.Rating,
+        //c.Name FROM Hotels h
+        //LEFT JOIN Countries c ON h.CountryId=c.CountryId
+        //WHERE h.Id=@id
         var hotel = await context.Hotels
-            .Include(h => h.Country) //Eager loading the country navigation property
-            .FirstOrDefaultAsync(q=>q.Id==id);
+           .Where(h => h.Id == id)
+           .Select(h=>new GetHotelDto(
+                h.Id,
+                h.Name,
+                h.Address,
+                h.Rating,
+                h.Country!.Name))
+            .FirstOrDefaultAsync();
 
         if (hotel == null)
         {
@@ -42,13 +53,21 @@ public class HotelsController(HotelListingDbContext context) : ControllerBase
     // PUT: api/Hotels/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutHotel(int id, Hotel hotel)
+    public async Task<IActionResult> PutHotel(int id, UpdateHotelDto hotelDto)
     {
-        if (id != hotel.Id)
+        if (id != hotelDto.Id)
         {
             return BadRequest();
         }
-
+        var hotel=await context.Hotels.FindAsync(id);
+        if (hotel == null)
+        {
+            return NotFound();
+        }
+        hotel.CountryId = hotelDto.CountryId;
+        hotel.Name = hotelDto.Name;
+        hotel.Address = hotelDto.Address;
+        hotel.Rating = hotelDto.Rating;
         context.Entry(hotel).State = EntityState.Modified;
 
         try
@@ -73,8 +92,15 @@ public class HotelsController(HotelListingDbContext context) : ControllerBase
     // POST: api/Hotels
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Hotel>> PostHotel(Hotel hotel)
+    public async Task<ActionResult<Hotel>> PostHotel(CreateHotelDto hotelDto)
     {
+        var hotel = new Hotel
+        {
+            Name = hotelDto.Name,
+            Address = hotelDto.Address,
+            Rating = hotelDto.Rating,
+            CountryId = hotelDto.CountryId,
+        };
         context.Hotels.Add(hotel);
         await context.SaveChangesAsync();
 
