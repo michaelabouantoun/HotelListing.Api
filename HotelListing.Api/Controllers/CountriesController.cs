@@ -1,135 +1,60 @@
-﻿using HotelListing.Api.Data;
+﻿using HotelListing.Api.Contracts;
 using HotelListing.Api.DTOs.Country;
-using HotelListing.Api.DTOs.Hotel;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-namespace HotelListing.Api.Controllers; //This means all code in the file is automatically in that namespace without wrapping it in { }.
+namespace HotelListing.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CountriesController(HotelListingDbContext context) : ControllerBase //i can write the constructor directly and context is accessed by all the class member //and i can do the injection in this way
+public class CountriesController(ICountriesService countriesService) : BaseApiController
 {
 
     // GET: api/Countries
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetCountriesDto>>> GetCountries()
     {
-        var countries = await context.Countries
-            .Select(c=>new GetCountriesDto(
-                c.CountryId,
-                c.Name,
-                c.ShortName
-                ))
-            .ToListAsync();
-        return Ok(countries);
+        var result = await countriesService.GetCountriesAsync();
+        return ToActionResult(result); //it directly know from the param types which one it call the generic or the non generic function
     }
 
     // GET: api/Countries/5
     [HttpGet("{id}")]
     public async Task<ActionResult<GetCountryDto>> GetCountry(int id)
     {
-        var country = await context.Countries
-            .Where(q=>q.CountryId==id)
-            .Select(c=>new GetCountryDto(
-                c.CountryId,
-                c.Name,
-                c.ShortName,
-                c.Hotels.Select(h=>new GetHotelSlimDto(
-                h.Id,
-                h.Name,
-                h.Address,
-                h.Rating
-                )).ToList()
-            ))
-            .FirstOrDefaultAsync();
-
-        if (country == null)
-        {
-            return NotFound();
-        }
-
-        return country;
+        var result = await countriesService.GetCountryAsync(id);
+        return ToActionResult(result);
     }
 
     // PUT: api/Countries/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
     public async Task<IActionResult> PutCountry(int id, UpdateCountryDto updateDto)
     {
-        if (id != updateDto.Id)
-        {
-            return BadRequest();
-        }
-        var country=await context.Countries.FindAsync(id);
-        if (country == null)
-        {
-            return NotFound();
-        }
-        country.ShortName = updateDto.ShortName;
-        country.Name = updateDto.Name;
+        var result = await countriesService.UpdateCountryAsync(id, updateDto);
 
-        context.Entry(country).State = EntityState.Modified;
-
-        try
-        {
-            await context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!await CountryExistsAsync(id)) //its better to be async because acces to the db
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
-
-        return NoContent();
+        return ToActionResult(result);
     }
 
     // POST: api/Countries
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPost]
-    public async Task<ActionResult<Country>> PostCountry(CreateCountryDto createDto)
-    {
-        var country=new Country
-        {
-            Name = createDto.Name,
-            ShortName = createDto.ShortName,
-        };
-        context.Countries.Add(country);
-        await context.SaveChangesAsync(); //entebeh may throw exception if id already exist
-        var resultDto=new GetCountryDto(
-        country.CountryId,
-        country.Name,
-        country.ShortName,
-        []
-        );
 
-        return CreatedAtAction("GetCountry", new { id = country.CountryId }, resultDto);
+    [HttpPost]
+    public async Task<ActionResult<GetCountryDto>> PostCountry(CreateCountryDto createDto)
+    {
+        var result = await countriesService.CreateCountryAsync(createDto);
+        if (!result.IsSuccess) return MapErrorsToResponse(result.Errors);
+        return CreatedAtAction(nameof(GetCountry), new { id = result.Value!.Id }, result.Value);
+        //i am sure that value here not null so for that why i put ! to let the compiler ignore
     }
 
     // DELETE: api/Countries/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCountry(int id)
     {
-        var country = await context.Countries.FindAsync(id);
-        if (country == null)
-        {
-            return NotFound();
-        }
-
-        context.Countries.Remove(country);
-        await context.SaveChangesAsync(); //delete didnt throw exception
-
-        return NoContent();
-    }
-
-    private async Task<bool> CountryExistsAsync(int id) //its better to be async because access to the db
-    {
-        return await context.Countries.AnyAsync(e => e.CountryId == id);
+        var result = await countriesService.DeleteCountryAsync(id);
+        return ToActionResult(result);
     }
 }
+
+
+
+
+

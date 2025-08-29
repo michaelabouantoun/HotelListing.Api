@@ -1,15 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore; //need to include this
+﻿using Microsoft.EntityFrameworkCore; //need to include it
 
-namespace HotelListing.Api.Data
+namespace HotelListing.Api.Data;
+
+public class HotelListingDbContext : DbContext
 {
-    public class HotelListingDbContext : DbContext
+    public HotelListingDbContext(DbContextOptions<HotelListingDbContext> options) : base(options)
     {
-        public HotelListingDbContext(DbContextOptions<HotelListingDbContext> options) :base(options)
-         {
-            
-        }
-        public DbSet<Country> Countries { get; set; }
-        public DbSet<Hotel> Hotels { get; set; }
 
     }
+    public DbSet<Country> Countries { get; set; }
+    public DbSet<Hotel> Hotels { get; set; }
+
 }

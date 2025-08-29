@@ -1,44 +1,5 @@
 @HotelListing.Api_HostAddress = https://localhost:7238
 
-GET {{HotelListing.Api_HostAddress}}/api/hotels
-
-###
-
-POST {{HotelListing.Api_HostAddress}}/api/hotels
-Content-Type: application/json
-
-{
-  
-  "id": 5,
-  "name": "Grand Plaza",
-  "address": "123 Main St",
-  "rating": 4.5
-
-}
-
-###
-
-@id=3
-DELETE {{HotelListing.Api_HostAddress}}/api/hotels/{{id}}
-
-###
-
-GET {{HotelListing.Api_HostAddress}}/api/hotels/{{id}}
-
-###
-
-PUT {{HotelListing.Api_HostAddress}}/api/hotels/{{id}}
-Content-Type: application/json
-
-{
-  "id": 9,
-  "name": "Test Hotel",
-  "address": "123 Main St",
-  "rating": 4.5
-}
-
-###
-
 GET {{HotelListing.Api_HostAddress}}/api/countries
 
 ###
@@ -47,12 +8,12 @@ POST {{HotelListing.Api_HostAddress}}/api/countries
 Content-Type: application/json
 
 {
-  "name":"Test",
-  "shortname":"d"
+  "name":"Lebanon",
+  "shortname":"LB"
 }
 
 ###
-@id=3
+@id=47
 DELETE {{HotelListing.Api_HostAddress}}/api/countries/{{id}}
 
 ###
@@ -64,9 +25,9 @@ PUT {{HotelListing.Api_HostAddress}}/api/countries/{{id}}
 Content-Type: application/json
 
 {
-"Id": 3,
- "name":"Jamaica",
-  "shortName":"JM"
+"Id": 47,
+ "name":"Lebanon",
+  "shortName":"lb"
 }
 
 ###
@@ -79,11 +40,11 @@ POST {{HotelListing.Api_HostAddress}}/api/hotels
 Content-Type: application/json
 
 {
-  "Id":5,
-  "Name":"cccx",
-  "Address": "123 Main St",
+  "Id":4,
+  "Name":"Mist hotel",
+  "Address": "Ehden",
   "Rating": 3,
-  "CountryId":7
+  "CountryId":47
 
 }
 
@@ -101,11 +62,11 @@ PUT {{HotelListing.Api_HostAddress}}/api/hotels/{{id}}
 Content-Type: application/json
 
 {
-  "Id":5,
-  "Name": "Ocean Coral",
-  "Address": "Trelawmy, Jamaica",
-  "rating":3,
-  "CountryId":7
+  "Id":19,
+  "Name": "Mist",
+  "Address": "Ehden",
+  "rating":4,
+  "CountryId":47
 }
 
 ###
