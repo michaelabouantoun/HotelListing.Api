@@ -1,13 +1,8 @@
 ﻿using HotelListing.Api.Constants;
 using HotelListing.Api.Contracts;
-using HotelListing.Api.Data;
-using HotelListing.Api.DTOs.Auth;
-using HotelListing.Api.Services;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Encodings.Web;
 
 namespace HotelListing.Api.Handlers;
@@ -21,16 +16,18 @@ public class ApiKeyAuthenticationHandler(
 {
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        string apiKey=string.Empty;
-        if(Request.Headers.TryGetValue(AuthenticationDefaults.ApiKeyHeaderName,out var headerValues))
+        string apiKey = string.Empty;
+        if (Request.Headers.TryGetValue(AuthenticationDefaults.ApiKeyHeaderName, out var headerValues))
         {
-            apiKey=headerValues.ToString();
+            apiKey = headerValues.ToString();
         }
-        if (string.IsNullOrEmpty(apiKey)) {
+        if (string.IsNullOrEmpty(apiKey))
+        {
             return AuthenticateResult.NoResult();
         }
         var valid = await apiKeyValidatorService.IsValidAsync(apiKey, Context.RequestAborted);
-        if (!valid) {
+        if (!valid)
+        {
             return AuthenticateResult.NoResult();
         }
         var claims = new List<Claim>
@@ -38,9 +35,9 @@ public class ApiKeyAuthenticationHandler(
             new(ClaimTypes.NameIdentifier, "apikey"),
             new(ClaimTypes.Name,"ApiKeyClient")
         };
-        var identity=new ClaimsIdentity(claims,Scheme.Name);
-        var principal=new ClaimsPrincipal(identity);
-        var ticket=new AuthenticationTicket(principal,Scheme.Name);
+        var identity = new ClaimsIdentity(claims, Scheme.Name);
+        var principal = new ClaimsPrincipal(identity);
+        var ticket = new AuthenticationTicket(principal, Scheme.Name);
         return AuthenticateResult.Success(ticket);
 
     }

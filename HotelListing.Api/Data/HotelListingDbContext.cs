@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection; //need to include it
 
@@ -19,7 +18,7 @@ public class HotelListingDbContext : IdentityDbContext<ApplicationUser>
         base.OnModelCreating(builder);
         builder.Entity<ApiKey>(b =>
         {
-            b.HasIndex(k=>k.Key).IsUnique();
+            b.HasIndex(k => k.Key).IsUnique();
         });
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }

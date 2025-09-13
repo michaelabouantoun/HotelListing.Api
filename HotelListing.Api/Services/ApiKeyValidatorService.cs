@@ -8,10 +8,10 @@ public class ApiKeyValidatorService(HotelListingDbContext db) : IApiKeyValidator
 {
     public async Task<bool> IsValidAsync(string apiKey, CancellationToken ct = default)
     {
-       var apiKeyEntity= await db.ApiKey
-            .AsNoTracking()
-            .FirstOrDefaultAsync(k=>k.Key==apiKey,ct);
-        if(apiKeyEntity == null) return false;
+        var apiKeyEntity = await db.ApiKey
+             .AsNoTracking()
+             .FirstOrDefaultAsync(k => k.Key == apiKey, ct);
+        if (apiKeyEntity == null) return false;
         return apiKeyEntity.IsActive;
     }
 }

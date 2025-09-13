@@ -14,6 +14,7 @@ public class HotelsService(HotelListingDbContext context, ICountriesService coun
     public async Task<Result<IEnumerable<GetHotelDto>>> GetHotelsAsync()
     {
         var hotels = await context.Hotels
+            .AsNoTracking()
             .ProjectTo<GetHotelDto>(mapper.ConfigurationProvider)
             .ToListAsync();
         return Result<IEnumerable<GetHotelDto>>.Success(hotels);
@@ -21,6 +22,7 @@ public class HotelsService(HotelListingDbContext context, ICountriesService coun
     public async Task<Result<GetHotelDto>> GetHotelAsync(int id)
     {
         var hotel = await context.Hotels
+            .AsNoTracking()
            .Where(h => h.Id == id)
            .ProjectTo<GetHotelDto>(mapper.ConfigurationProvider)
            .FirstOrDefaultAsync();

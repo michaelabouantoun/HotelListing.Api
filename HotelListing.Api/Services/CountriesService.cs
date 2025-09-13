@@ -14,6 +14,7 @@ public class CountriesService(HotelListingDbContext context, IMapper mapper) : I
     public async Task<Result<IEnumerable<GetCountriesDto>>> GetCountriesAsync()
     {
         var countries = await context.Countries
+        .AsNoTracking() //perfomance booster
         .ProjectTo<GetCountriesDto>(mapper.ConfigurationProvider) //error provider handled
         .ToListAsync();
         return Result<IEnumerable<GetCountriesDto>>.Success(countries);
@@ -21,6 +22,7 @@ public class CountriesService(HotelListingDbContext context, IMapper mapper) : I
     public async Task<Result<GetCountryDto>> GetCountryAsync(int id)
     {
         var country = await context.Countries
+            .AsNoTracking()
             .Where(q => q.CountryId == id)
             .ProjectTo<GetCountryDto>(mapper.ConfigurationProvider) //error provider handled
             .FirstOrDefaultAsync();

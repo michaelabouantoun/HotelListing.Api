@@ -1,8 +1,6 @@
 ﻿using HotelListing.Api.Contracts;
-using HotelListing.Api.Data;
 using HotelListing.Api.DTOs.Auth;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text;
@@ -40,17 +38,18 @@ public class BasicAuthenticationHandler(
             return AuthenticateResult.Fail("Invalid Basic authentication token.");
         }
         var seperatorIndex = decoded.IndexOf(':');
-        if (seperatorIndex <= 0) {
+        if (seperatorIndex <= 0)
+        {
             return AuthenticateResult.Fail("Invalid Basic authentication credentials format");
         }
         var userNameOrEmail = decoded[..seperatorIndex];
-        var password = decoded[(seperatorIndex+1)..];
+        var password = decoded[(seperatorIndex + 1)..];
         var loginDto = new LoginUserDto
         {
             Email = userNameOrEmail,
             Password = password
         };
-        var result = await  usersService.LoginAsync(loginDto);
+        var result = await usersService.LoginAsync(loginDto);
         if (!result.IsSuccess)
         {
             return AuthenticateResult.Fail("invalid username or password.");
@@ -59,9 +58,9 @@ public class BasicAuthenticationHandler(
         {
             new Claim(ClaimTypes.Name, userNameOrEmail),
         };
-        var identity=new ClaimsIdentity(claims,Scheme.Name);
-        var principal=new ClaimsPrincipal(identity);
-        var ticket=new AuthenticationTicket(principal,Scheme.Name);
+        var identity = new ClaimsIdentity(claims, Scheme.Name);
+        var principal = new ClaimsPrincipal(identity);
+        var ticket = new AuthenticationTicket(principal, Scheme.Name);
         return AuthenticateResult.Success(ticket);
 
     }

@@ -13,7 +13,7 @@ public class CountriesController(ICountriesService countriesService) : BaseApiCo
 
     // GET: api/Countries
     [HttpGet]
-    
+
     public async Task<ActionResult<IEnumerable<GetCountriesDto>>> GetCountries()
     {
         var result = await countriesService.GetCountriesAsync();
@@ -30,7 +30,7 @@ public class CountriesController(ICountriesService countriesService) : BaseApiCo
 
     // PUT: api/Countries/5
     [HttpPut("{id}")]
-    [Authorize(Roles ="Administrator")]
+    [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> PutCountry(int id, UpdateCountryDto updateDto)
     {
         var result = await countriesService.UpdateCountryAsync(id, updateDto);

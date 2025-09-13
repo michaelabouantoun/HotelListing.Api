@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Text;
 namespace HotelListing.Api.Services;
 
-public class UsersService(UserManager<ApplicationUser> userManager,IConfiguration configuration) : IUsersService
+public class UsersService(UserManager<ApplicationUser> userManager, IConfiguration configuration) : IUsersService
 {
     public async Task<Result<RegisteredUserDto>> RegisterAsync(RegisterUserDto registerUserDto)
     {
@@ -22,13 +22,13 @@ public class UsersService(UserManager<ApplicationUser> userManager,IConfiguratio
             LastName = registerUserDto.LastName,
             UserName = registerUserDto.Email
         };
-        var result = await userManager.CreateAsync(user, registerUserDto.Password);
+        var result = await userManager.CreateAsync(user, registerUserDto.Password); //pass is hashed then stored in the db //this method has a layer of protection at the db level where user manager and identity enfore, like whatever pass length restrictions i put on, if the same username/email is coming in as one that already exists,all of those will in errors and result will not be successful
         if (!result.Succeeded)
         {
             var errors = result.Errors.Select(e => new Error(ErrorCodes.BadRequest, e.Description)).ToArray();
             return Result<RegisteredUserDto>.BadRequest(errors);
         }
-        await userManager.AddToRoleAsync(user,registerUserDto.Role);
+        await userManager.AddToRoleAsync(user, registerUserDto.Role);
         var registeredUser = new RegisteredUserDto
         {
             Email = user.Email,
@@ -47,23 +47,24 @@ public class UsersService(UserManager<ApplicationUser> userManager,IConfiguratio
         {
             return Result<string>.Failure(new Error(ErrorCodes.BadRequest, "Invalid credentials"));
         }
-        var isPasswordValid = await userManager.CheckPasswordAsync(user, loginUserDto.Password);
+        var isPasswordValid = await userManager.CheckPasswordAsync(user, loginUserDto.Password); //note: because the object is tracked this method it doesnt refetch from the memory (why async? only for API consistency because other UserManager methods usually hits the store
+        //the method take the user.PasswordHash it applies the same hashing alg to the input pass it compares result ...
         if (!isPasswordValid)
         {
             return Result<string>.Failure(new Error(ErrorCodes.BadRequest, "Invalid credentials"));
         }
         //Issue a token
-        var token=await GenerateToken(user);
+        var token = await GenerateToken(user);
 
         return Result<string>.Success(token);
     }
-private async Task<string> GenerateToken(ApplicationUser user)
+    private async Task<string> GenerateToken(ApplicationUser user)
     {
         //set basic user claims
         var claims = new List<Claim>
         {
-         new (JwtRegisteredClaimNames.Sub,user.Id),
-         new (JwtRegisteredClaimNames.Email,user.Email),
+         new(JwtRegisteredClaimNames.Sub,user.Id),
+         new(JwtRegisteredClaimNames.Email,user.Email),
          new(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
          new(JwtRegisteredClaimNames.Name,user.FullName),
 
@@ -71,19 +72,19 @@ private async Task<string> GenerateToken(ApplicationUser user)
 
         //set user role claims
         var roles = await userManager.GetRolesAsync(user);
-        var roleClaims=roles.Select(x=>new Claim(ClaimTypes.Role,x)).ToList();
-       claims= claims.Union(roleClaims).ToList();
+        var roleClaims = roles.Select(x => new Claim(ClaimTypes.Role, x)).ToList();
+        claims = claims.Union(roleClaims).ToList();
 
         //set jwt key credentials
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"]));
-        var credentials=new SigningCredentials(securityKey,SecurityAlgorithms.HmacSha256);
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         //create an encoded token
         var token = new JwtSecurityToken(
             issuer: configuration["JwtSettings:Issuer"],
             audience: configuration["JwtSettings:Audience"],
-            claims:claims,
+            claims: claims,
             expires: DateTime.UtcNow.AddMinutes(Convert.ToInt32(configuration["JwtSettings:DurationInMinutes"])),
-            signingCredentials:credentials
+            signingCredentials: credentials
             );
 
 

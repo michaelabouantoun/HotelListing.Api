@@ -7,11 +7,11 @@ public class ApiKey
 {
     public int Id { get; set; }
     [MaxLength(256)]
-    public string Key { get; set; }=string.Empty;
+    public string Key { get; set; } = string.Empty;
     [MaxLength(250)]
     public string AppName { get; set; } = string.Empty;
     public DateTimeOffset? ExpiresAtUtc { get; set; }
-    public DateTimeOffset CreatedAtUtc { get; set; }=DateTimeOffset.UtcNow;
+    public DateTimeOffset CreatedAtUtc { get; set; } = DateTimeOffset.UtcNow;
     [NotMapped]
     public bool IsActive => !ExpiresAtUtc.HasValue || ExpiresAtUtc.Value > DateTimeOffset.UtcNow;
 
