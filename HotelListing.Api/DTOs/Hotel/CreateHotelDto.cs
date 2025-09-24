@@ -14,4 +14,6 @@ public class CreateHotelDto
     public double Rating { get; set; }
     [Required]
     public int CountryId { get; set; }
+    [Required]
+    public int PerNightRate { get; set; }
 }

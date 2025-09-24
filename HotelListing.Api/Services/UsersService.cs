@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Text;
 namespace HotelListing.Api.Services;
 
-public class UsersService(UserManager<ApplicationUser> userManager, IConfiguration configuration) : IUsersService
+public class UsersService(UserManager<ApplicationUser> userManager, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, HotelListingDbContext hotelListingDbContext) : IUsersService
 {
     public async Task<Result<RegisteredUserDto>> RegisterAsync(RegisterUserDto registerUserDto)
     {
@@ -29,6 +29,17 @@ public class UsersService(UserManager<ApplicationUser> userManager, IConfigurati
             return Result<RegisteredUserDto>.BadRequest(errors);
         }
         await userManager.AddToRoleAsync(user, registerUserDto.Role);
+        //if Hotel Admin, add to hotelAdmins table
+        if (registerUserDto.Role == "Hotel Admin")
+        {
+            var hotelAdmin = hotelListingDbContext.HotelAdmins.Add(
+                new HotelAdmin
+                {
+                    UserId = user.Id,
+                    HotelId = registerUserDto.AssociatedHotelId.GetValueOrDefault()
+                });
+            await hotelListingDbContext.SaveChangesAsync();
+        }
         var registeredUser = new RegisteredUserDto
         {
             Email = user.Email,
@@ -58,6 +69,14 @@ public class UsersService(UserManager<ApplicationUser> userManager, IConfigurati
 
         return Result<string>.Success(token);
     }
+    // we create that for a dry principle
+    public string UserId => httpContextAccessor? //every Http request in asp.net core has a HttpContext, inside it,HttpContext.User represents the current authenticated user if the request went through authentication middleware(Jwtbearer),the middleware populates User With a ClaimsPrincipal that has claims 
+        .HttpContext?//but if the request is anonymous or authentication failed or you didnt configure authentication at all, then HttpContext.User will be empty
+        .User?
+        .FindFirst(JwtRegisteredClaimNames.Sub)?.Value ?? httpContextAccessor?
+        .HttpContext?
+        .User?
+        .FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
     private async Task<string> GenerateToken(ApplicationUser user)
     {
         //set basic user claims

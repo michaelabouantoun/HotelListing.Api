@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HotelListing.Api.Data;
+using HotelListing.Api.DTOs.Booking;
 using HotelListing.Api.DTOs.Country;
 using HotelListing.Api.DTOs.Hotel;
 
@@ -34,11 +35,46 @@ public class CountryMappingProfile : Profile
     }
 
 }
-/*public class CountryNameResolver : IValueResolver<Hotel, GetHotelDto, string>
+public sealed class BookingMappingProfile : Profile
 {
-    public string Resolve(Hotel source, GetHotelDto destination, string destMember, ResolutionContext context)
+    public BookingMappingProfile()
     {
-        return source.Country?.Name ?? string.Empty;
-    }
-}*/    //bad idea in this case
+        CreateMap<Booking, GetBookingDto>()
+        .ForMember(d => d.HotelName, o => o.MapFrom(s => s.Hotel!.Name))
+        .ForMember(d => d.Status, o => o.MapFrom(s => s.Status.ToString()));
+        CreateMap<CreateBookingDto, Booking>()
+          .ForMember(d => d.Id, o => o.Ignore())         //if i dont specify this automapper will automatically
+          .ForMember(d => d.UserId, o => o.Ignore())    //will look at every property in booking and then try and map every property over to the target which is in this case createDto
+          .ForMember(d => d.TotalPrice, o => o.Ignore())
+          .ForMember(d => d.Status, o => o.Ignore())
+          .ForMember(d => d.CreatedAtUtc, o => o.Ignore())
+          .ForMember(d => d.UpdatedAtUtc, o => o.Ignore())
+          .ForMember(d => d.User, o => o.Ignore())
+          .ForMember(d => d.HotelId, o => o.Ignore())
+          .ForMember(d => d.Hotel, o => o.Ignore());
 
+        CreateMap<UpdateBookingDto, Booking>()
+            .ForMember(d => d.Id, o => o.Ignore())
+            .ForMember(d => d.UserId, o => o.Ignore())
+            .ForMember(d => d.TotalPrice, o => o.Ignore())
+            .ForMember(d => d.Status, o => o.Ignore())
+            .ForMember(d => d.CreatedAtUtc, o => o.Ignore())
+            .ForMember(d => d.UpdatedAtUtc, o => o.Ignore())
+            .ForMember(d => d.User, o => o.Ignore())
+            .ForMember(d => d.HotelId, o => o.Ignore())
+            .ForMember(d => d.Hotel, o => o.Ignore());
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+}
