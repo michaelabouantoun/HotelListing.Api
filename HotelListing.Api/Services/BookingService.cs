@@ -14,7 +14,8 @@ public class BookingService(HotelListingDbContext context, IUsersService usersSe
 {
     public async Task<Result<IEnumerable<GetBookingDto>>> GetBookingsForHotelAsync(int hotelId)
     {
-        var hotelExists = await context.Hotels.AnyAsync(h => h.Id == hotelId);
+        var hotelExists = await context.Hotels.AnyAsync(h => h.Id == hotelId); // This hotel existence check is only necessary for System Administrators.
+                                                                               // HotelAdmins are guaranteed by the FK constraint to be linked to a valid Hotel.
         if (!hotelExists)
         {
             return Result<IEnumerable<GetBookingDto>>.NotFound(new Error(ErrorCodes.NotFound, $"Hotel with id '{hotelId}' was not found."));
