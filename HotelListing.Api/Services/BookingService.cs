@@ -22,6 +22,7 @@ public class BookingService(HotelListingDbContext context, IUsersService usersSe
         var bookings = await context.Bookings
                         .Where(b => b.HotelId == hotelId)
                         .OrderBy(b => b.CheckIn)
+                        .AsNoTracking()
                         .ProjectTo<GetBookingDto>(mapper.ConfigurationProvider)
                         .ToListAsync();
         return Result<IEnumerable<GetBookingDto>>.Success(bookings);
@@ -40,6 +41,7 @@ public class BookingService(HotelListingDbContext context, IUsersService usersSe
 
         var hotel = await context.Hotels
             .Where(h => h.Id == hotelId)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
         if (hotel == null)
         {
@@ -188,6 +190,7 @@ public class BookingService(HotelListingDbContext context, IUsersService usersSe
         var bookings = await context.Bookings
                         .Where(b => b.HotelId == hotelId && b.UserId == userId)
                         .OrderBy(b => b.CheckIn)
+                        .AsNoTracking()
                         .ProjectTo<GetBookingDto>(mapper.ConfigurationProvider)
                         .ToListAsync();
         return Result<IEnumerable<GetBookingDto>>.Success(bookings);
