@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HotelListing.Api.Controllers;
 
-[Route("api/hotels/{hotelId:int}/bookings")] //a booking cannot exist independently it must belong to a hotel so this route make the relationship explicit
-[ApiController]                             //and then from here now we can actually put in stuff to manage the bookings for a hotel with that id in the route
-[Authorize]                                //now i need to know who this user,which user is this request coming from
-                                           //so now in order to transmit that info there either needs to be some form of auth stuff and inf thats being sent about who you are or some inf needs to be sent in the body,i didnt need to cz this should be coming from somebody i can identify so thats why we use IHttpContextAccessor
+[Route("api/hotels/{hotelId:int}/bookings")]
+[ApiController]
+[Authorize]
+
 public class HotelBookingsController(IBookingService bookingService) : BaseApiController
 {
     [HttpGet("admin")]
@@ -20,8 +20,8 @@ public class HotelBookingsController(IBookingService bookingService) : BaseApiCo
         return ToActionResult(result);
 
     }
-    //one get endpoints that let the admin to get the bookings on a special hotel that he is admin on
-    // and another one for the user to get his bookings on a special hotel also
+
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetBookingDto>>> GetBookings([FromRoute] int hotelId)
     {
