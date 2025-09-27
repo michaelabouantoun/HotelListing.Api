@@ -5,6 +5,12 @@ VisualStudioVersion = 17.14.36310.24
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelListing.Api", "HotelListing.Api\HotelListing.Api.csproj", "{FCB28971-B9D3-424E-85D1-14898252E83E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelListing.Api.Common", "HotelListing.Api.Common\HotelListing.Api.Common.csproj", "{A7E5ABBF-FB67-4237-A5A1-D14D11B679C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelListing.Api.Domain", "HotelListing.Api.Domain\HotelListing.Api.Domain.csproj", "{97423736-6348-47B6-87F6-7B692E26D103}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelListing.Api.Application", "HotelListing.Api.Application\HotelListing.Api.Application.csproj", "{54CF9F7E-6926-434A-8C04-D1C4899591B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +21,18 @@ Global
 		{FCB28971-B9D3-424E-85D1-14898252E83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCB28971-B9D3-424E-85D1-14898252E83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCB28971-B9D3-424E-85D1-14898252E83E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7E5ABBF-FB67-4237-A5A1-D14D11B679C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7E5ABBF-FB67-4237-A5A1-D14D11B679C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7E5ABBF-FB67-4237-A5A1-D14D11B679C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7E5ABBF-FB67-4237-A5A1-D14D11B679C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97423736-6348-47B6-87F6-7B692E26D103}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97423736-6348-47B6-87F6-7B692E26D103}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97423736-6348-47B6-87F6-7B692E26D103}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97423736-6348-47B6-87F6-7B692E26D103}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54CF9F7E-6926-434A-8C04-D1C4899591B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54CF9F7E-6926-434A-8C04-D1C4899591B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54CF9F7E-6926-434A-8C04-D1C4899591B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54CF9F7E-6926-434A-8C04-D1C4899591B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

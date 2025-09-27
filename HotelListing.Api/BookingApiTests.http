@@ -1,21 +1,21 @@
 ### Variables
 @json = application/json
 @host=https://localhost:7238
-@hotelId=23
-@bookingId=8
+@hotelId=28
+@bookingId=12
 @today={{$localDatetime iso8601}} 
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxZDNlYzNiYi0zZTI2LTRjMTQtOWUwNi02ZGYyODQ5ZTIwZDkiLCJlbWFpbCI6ImFkbWluQGxvY2FsaG9zdC5jb20iLCJqdGkiOiIxNWRiMGEwZC01NGYwLTQ4MGEtOTkxYi1kOTBiYzQ0Mjc4ZGIiLCJuYW1lIjoiYWRtaW4sIGFkbWluIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiSG90ZWwgQWRtaW4iLCJleHAiOjE3NTg3MDM1NjEsImlzcyI6IkhvdGVsTGlzdGluZ0FQSSIsImF1ZCI6IkhvdGVsTGlzdGluZ0FQSUNsaWVudCJ9.ISFpi1iUh1mcy4cI95Flt_N7WXzVk7B5md4xbFaSZjg
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNDMwYzkyYS0xYzc0LTRhNjMtYWNmYS05NDFlMWUxNmQxZGMiLCJlbWFpbCI6IkhvdGVsQWRtaW5AbG9jYWxob3N0LmNvbSIsImp0aSI6ImI3ODI1YzVlLWY0OTItNDEwMS1hNjY5LTVkMzBiMjcyOGM2OCIsIm5hbWUiOiJhZG1pbiwgYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJIb3RlbCBBZG1pbiIsImV4cCI6MTc1ODk3ODYwMywiaXNzIjoiSG90ZWxMaXN0aW5nQVBJIiwiYXVkIjoiSG90ZWxMaXN0aW5nQVBJQ2xpZW50In0.lFy4xnaG_aHL2L8kozjZm-waBEgBPqGhLjS9LXvRhf4
 ###
 POST {{host}}/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "admin@localhost.com",
+  "email": "HotelAdmin@localhost.com",
   "password": "P@ssword1",
   "firstName":"admin",
   "lastName": "admin",
   "role": "Hotel Admin",
-  "associatedHotelId": 23
+  "associatedHotelId": 27
 }
 ###
 POST {{host}}/api/auth/login
@@ -23,7 +23,7 @@ Content-Type: application/json
 
 
 {
-  "email": "admin@localhost.com",
+  "email": "HotelAdmin@localhost.com",
   "password": "P@ssword1"
 }
 ###
