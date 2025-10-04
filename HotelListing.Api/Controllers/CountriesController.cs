@@ -1,6 +1,8 @@
 ﻿using HotelListing.Api.Application.Contracts;
 using HotelListing.Api.Application.DTOs.Country;
 using HotelListing.Api.Common.Constants;
+using HotelListing.Api.Common.Models.Filtering;
+using HotelListing.Api.Common.Models.Paging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,11 +17,22 @@ public class CountriesController(ICountriesService countriesService) : BaseApiCo
     // GET: api/Countries
     [HttpGet]
 
-    public async Task<ActionResult<IEnumerable<GetCountriesDto>>> GetCountries()
+    public async Task<ActionResult<IEnumerable<GetCountriesDto>>> GetCountries([FromQuery] CountryFilterParameters filters)
     {
-        var result = await countriesService.GetCountriesAsync();
+        var result = await countriesService.GetCountriesAsync(filters);
         return ToActionResult(result); //it directly know from the param types which one it call the generic or the non generic function
     }
+    //GET: api/Countries{id}/hotels
+    [HttpGet("{countryId:int}/hotels")]
+    public async Task<ActionResult<GetCountryHotelsDto>> GetCountryHotels(
+        [FromRoute] int countryId,
+        [FromQuery] PaginationParameters paginationParameters,
+        [FromQuery] CountryFilterParameters filters)
+    {
+        var result = await countriesService.GetCountryHotelsAsync(countryId, paginationParameters, filters);
+        return ToActionResult(result);
+    }
+
 
     // GET: api/Countries/5
     [HttpGet("{id}")]

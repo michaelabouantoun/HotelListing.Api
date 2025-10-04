@@ -2,7 +2,11 @@
 using AutoMapper.QueryableExtensions;
 using HotelListing.Api.Application.Contracts;
 using HotelListing.Api.Application.DTOs.Country;
+using HotelListing.Api.Application.DTOs.Hotel;
 using HotelListing.Api.Common.Constants;
+using HotelListing.Api.Common.Models.Extensions;
+using HotelListing.Api.Common.Models.Filtering;
+using HotelListing.Api.Common.Models.Paging;
 using HotelListing.Api.Common.Results;
 using HotelListing.Api.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +15,16 @@ namespace HotelListing.Api.Application.Services;
 
 public class CountriesService(HotelListingDbContext context, IMapper mapper) : ICountriesService
 {
-    public async Task<Result<IEnumerable<GetCountriesDto>>> GetCountriesAsync()
+    public async Task<Result<IEnumerable<GetCountriesDto>>> GetCountriesAsync(CountryFilterParameters filters)
     {
-        var countries = await context.Countries
-        .AsNoTracking() //perfomance booster
+        var query = context.Countries.AsQueryable();
+        if (!string.IsNullOrWhiteSpace(filters.Search))
+        {
+            var term = filters.Search.Trim();
+            query = query.Where(c => EF.Functions.Like(c.Name, $"%{term}%")
+            || EF.Functions.Like(c.ShortName, $"%{term}%"));
+        }
+        var countries = await query
         .ProjectTo<GetCountriesDto>(mapper.ConfigurationProvider) //error provider handled
         .ToListAsync();
         return Result<IEnumerable<GetCountriesDto>>.Success(countries);
@@ -22,7 +32,6 @@ public class CountriesService(HotelListingDbContext context, IMapper mapper) : I
     public async Task<Result<GetCountryDto>> GetCountryAsync(int id)
     {
         var country = await context.Countries
-            .AsNoTracking()
             .Where(q => q.CountryId == id)
             .ProjectTo<GetCountryDto>(mapper.ConfigurationProvider) //error provider handled
             .FirstOrDefaultAsync();
@@ -82,5 +91,47 @@ public class CountriesService(HotelListingDbContext context, IMapper mapper) : I
         return await context.Countries.AnyAsync(e => e.CountryId == id);
     }
 
+    public async Task<Result<GetCountryHotelsDto>> GetCountryHotelsAsync(int countryId, PaginationParameters paginationParameters
+        , CountryFilterParameters filters)
+    {
+        var countryName = await context.Countries
+            .Where(q => q.CountryId == countryId)
+            .Select(q => q.Name)
+            .FirstOrDefaultAsync();
+        if (countryName == null)
+        {
+            return Result<GetCountryHotelsDto>.Failure(new Error(ErrorCodes.NotFound, $"Country '{countryId}' was not found."));
+
+        }
+        //ghyrt
+        var hotelsQuery = context.Hotels
+            .Where(h => h.CountryId == countryId)
+            .AsQueryable();
+        if (!string.IsNullOrWhiteSpace(filters.Search))
+        {
+            var term = filters.Search.Trim();
+            hotelsQuery = hotelsQuery.Where(h => EF.Functions.Like(h.Name, $"%{term}%"));
+
+        }
+        hotelsQuery = (filters.SortBy?.Trim().ToLowerInvariant()) switch
+        {
+            "name" => filters.SortDescending ? hotelsQuery.OrderByDescending(q => q.Name) :
+            hotelsQuery.OrderBy(q => q.Name),
+            "rating" => filters.SortDescending ? hotelsQuery.OrderByDescending(q => q.Rating) :
+            hotelsQuery.OrderBy(q => q.Rating),
+            _ => hotelsQuery.OrderBy(q => q.Name)
+        };
+        var pagedHotels = await hotelsQuery
+            .ProjectTo<GetHotelSlimDto>(mapper.ConfigurationProvider)
+            .ToPagedResultAsync(paginationParameters);
+        var result = new GetCountryHotelsDto
+        {
+            Id = countryId,
+            Name = countryName,
+            Hotels = pagedHotels
+        };
+        return Result<GetCountryHotelsDto>.Success(result);
+    }
 }
+
 

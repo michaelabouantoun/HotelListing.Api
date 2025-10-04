@@ -1,11 +1,12 @@
 ﻿using HotelListing.Api.Application.Contracts;
 using HotelListing.Api.Application.DTOs.Auth;
 using HotelListing.Api.Common.Constants;
-using HotelListing.Api.Common.Models;
+using HotelListing.Api.Common.Models.Config;
 using HotelListing.Api.Common.Results;
 using HotelListing.Api.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -35,6 +36,13 @@ public class UsersService(UserManager<ApplicationUser> userManager, IOptions<Jwt
         //if Hotel Admin, add to hotelAdmins table
         if (registerUserDto.Role == RoleNames.HotelAdmin)
         {
+            var hotelExists = await hotelListingDbContext.Hotels
+       .AnyAsync(h => h.Id == registerUserDto.AssociatedHotelId);
+
+            if (!hotelExists)
+            {
+                return Result<RegisteredUserDto>.Failure(new Error(ErrorCodes.NotFound, $"AssociatedHotel to this hotel admin is not found")); // Or throw / return custom error
+            }
             var hotelAdmin = hotelListingDbContext.HotelAdmins.Add(
                 new HotelAdmin
                 {

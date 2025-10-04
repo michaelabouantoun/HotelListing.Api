@@ -1,20 +1,20 @@
 ### Variables
 @json = application/json
 @host=https://localhost:7238
-@hotelId=28
+@hotelId=27
 @bookingId=12
 @today={{$localDatetime iso8601}} 
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNDMwYzkyYS0xYzc0LTRhNjMtYWNmYS05NDFlMWUxNmQxZGMiLCJlbWFpbCI6IkhvdGVsQWRtaW5AbG9jYWxob3N0LmNvbSIsImp0aSI6ImI3ODI1YzVlLWY0OTItNDEwMS1hNjY5LTVkMzBiMjcyOGM2OCIsIm5hbWUiOiJhZG1pbiwgYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJIb3RlbCBBZG1pbiIsImV4cCI6MTc1ODk3ODYwMywiaXNzIjoiSG90ZWxMaXN0aW5nQVBJIiwiYXVkIjoiSG90ZWxMaXN0aW5nQVBJQ2xpZW50In0.lFy4xnaG_aHL2L8kozjZm-waBEgBPqGhLjS9LXvRhf4
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzMWExMzFkOC0zMGM5LTQ5OWUtOGNhYS0xYWFjOWQ5NDA3NDUiLCJlbWFpbCI6IkFkbWluQWRtaW5AbG9jYWxob3N0LmNvbSIsImp0aSI6ImJhZGFhNWI3LTRmMjktNGZhOC1hNTAzLWU3NDkyYTUzOTQwYSIsIm5hbWUiOiJhZG1pbiwgYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbmlzdHJhdG9yIiwiZXhwIjoxNzU5NTk3NTUwLCJpc3MiOiJIb3RlbExpc3RpbmdBUEkiLCJhdWQiOiJIb3RlbExpc3RpbmdBUElDbGllbnQifQ.m6F_LP2uAi1-w2SYh5VGSdMDAahnr-jG8b5HJr9j5lo
 ###
 POST {{host}}/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "HotelAdmin@localhost.com",
+  "email": "AdminAdmin@localhost.com",
   "password": "P@ssword1",
   "firstName":"admin",
   "lastName": "admin",
-  "role": "Hotel Admin",
+  "role": "Administrator",
   "associatedHotelId": 27
 }
 ###
@@ -23,7 +23,7 @@ Content-Type: application/json
 
 
 {
-  "email": "HotelAdmin@localhost.com",
+  "email": "AdminAdmin@localhost.com",
   "password": "P@ssword1"
 }
 ###
@@ -96,8 +96,8 @@ Authorization: Bearer {{token}}
 
 {
   "hotelId": {{hotelId}},
-  "checkIn": "2025-10-14",
-  "checkOut": "2025-10-17",
+  "checkIn": "2025-10-22",
+  "checkOut": "2025-10-24",
   "guests": 1
 }
 
@@ -166,7 +166,7 @@ PUT {{host}}/api/hotels/{{hotelId}}/bookings/{{bookingId}}/cancel
 Authorization: Bearer {{token}}
 ###
 # 13. List all bookings for hotel
-GET {{host}}/api/hotels/{{hotelId}}/bookings/admin
+GET {{host}}/api/hotels/{{hotelId}}/bookings/admin?pagesize=2&Status=Confirmed
 Authorization: Bearer {{token}}
 
 ###

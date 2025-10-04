@@ -3,6 +3,9 @@ using AutoMapper.QueryableExtensions;
 using HotelListing.Api.Application.Contracts;
 using HotelListing.Api.Application.DTOs.Hotel;
 using HotelListing.Api.Common.Constants;
+using HotelListing.Api.Common.Models.Extensions;
+using HotelListing.Api.Common.Models.Filtering;
+using HotelListing.Api.Common.Models.Paging;
 using HotelListing.Api.Common.Results;
 using HotelListing.Api.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -11,18 +14,48 @@ namespace HotelListing.Api.Application.Services;
 
 public class HotelsService(HotelListingDbContext context, ICountriesService countriesService, IMapper mapper) : IHotelsService
 {
-    public async Task<Result<IEnumerable<GetHotelDto>>> GetHotelsAsync()
+    public async Task<Result<PagedResult<GetHotelDto>>> GetHotelsAsync(PaginationParameters paginationParameters
+        , HotelFilterParameters filters)
     {
-        var hotels = await context.Hotels
-            .AsNoTracking()
+        var query = context.Hotels.AsQueryable();
+        if (filters.CountryId.HasValue)
+        {
+            query = query.Where(q => q.CountryId == filters.CountryId);
+        }
+        if (filters.MinRating.HasValue)
+            query = query.Where(h => h.Rating >= filters.MinRating.Value);
+        if (filters.MaxRating.HasValue)
+            query = query.Where(h => h.Rating <= filters.MaxRating.Value);
+        if (filters.MinPrice.HasValue)
+            query = query.Where(h => h.PerNightRate >= filters.MinPrice.Value);
+        if (filters.MaxPrice.HasValue)
+            query = query.Where(h => h.PerNightRate <= filters.MaxPrice.Value);
+        if (!string.IsNullOrEmpty(filters.Location))
+            query = query.Where(h => h.Address.Contains(filters.Location));
+        //generic search param
+        if (!string.IsNullOrEmpty(filters.Search))
+            query = query.Where(h => h.Name.Contains(filters.Search) ||
+                                    h.Address.Contains(filters.Search));
+        query = filters.SortBy?.ToLower() switch
+        {
+            "name" => filters.SortDescending ?
+                query.OrderByDescending(h => h.Name) : query.OrderBy(h => h.Name),
+            "rating" => filters.SortDescending ?
+                query.OrderByDescending(h => h.Rating) : query.OrderBy(h => h.Rating),
+
+            "price" => filters.SortDescending ?
+                query.OrderByDescending(h => h.PerNightRate) : query.OrderBy(h => h.PerNightRate),
+            _ => query.OrderBy(h => h.Name),
+        };
+
+        var hotels = await query
             .ProjectTo<GetHotelDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
-        return Result<IEnumerable<GetHotelDto>>.Success(hotels);
+            .ToPagedResultAsync(paginationParameters);
+        return Result<PagedResult<GetHotelDto>>.Success(hotels);
     }
     public async Task<Result<GetHotelDto>> GetHotelAsync(int id)
     {
         var hotel = await context.Hotels
-            .AsNoTracking()
            .Where(h => h.Id == id)
            .ProjectTo<GetHotelDto>(mapper.ConfigurationProvider)
            .FirstOrDefaultAsync();
@@ -100,5 +133,10 @@ public class HotelsService(HotelListingDbContext context, ICountriesService coun
     {
         return await context.Hotels.AnyAsync(e => e.Id == id);
     }
-
+    public async Task<Hotel?> HotelObjectExistsAsync(int id)
+    {
+        return await context.Hotels
+            .AsNoTracking()
+            .FirstOrDefaultAsync(h => h.Id == id);
+    }
 }
