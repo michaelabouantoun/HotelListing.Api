@@ -115,11 +115,9 @@ public class CountriesService(HotelListingDbContext context, IMapper mapper) : I
         }
         hotelsQuery = (filters.SortBy?.Trim().ToLowerInvariant()) switch
         {
-            "name" => filters.SortDescending ? hotelsQuery.OrderByDescending(q => q.Name) :
-            hotelsQuery.OrderBy(q => q.Name),
             "rating" => filters.SortDescending ? hotelsQuery.OrderByDescending(q => q.Rating) :
             hotelsQuery.OrderBy(q => q.Rating),
-            _ => hotelsQuery.OrderBy(q => q.Name)
+            _ => hotelsQuery.OrderBy(q => q.PerNightRate)
         };
         var pagedHotels = await hotelsQuery
             .ProjectTo<GetHotelSlimDto>(mapper.ConfigurationProvider)

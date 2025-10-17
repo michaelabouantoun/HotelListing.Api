@@ -30,22 +30,20 @@ public class HotelsService(HotelListingDbContext context, ICountriesService coun
             query = query.Where(h => h.PerNightRate >= filters.MinPrice.Value);
         if (filters.MaxPrice.HasValue)
             query = query.Where(h => h.PerNightRate <= filters.MaxPrice.Value);
-        if (!string.IsNullOrEmpty(filters.Location))
+        if (!string.IsNullOrWhiteSpace(filters.Location))
             query = query.Where(h => h.Address.Contains(filters.Location));
         //generic search param
-        if (!string.IsNullOrEmpty(filters.Search))
+        if (!string.IsNullOrWhiteSpace(filters.Search))
             query = query.Where(h => h.Name.Contains(filters.Search) ||
                                     h.Address.Contains(filters.Search));
         query = filters.SortBy?.ToLower() switch
         {
-            "name" => filters.SortDescending ?
-                query.OrderByDescending(h => h.Name) : query.OrderBy(h => h.Name),
             "rating" => filters.SortDescending ?
                 query.OrderByDescending(h => h.Rating) : query.OrderBy(h => h.Rating),
 
             "price" => filters.SortDescending ?
                 query.OrderByDescending(h => h.PerNightRate) : query.OrderBy(h => h.PerNightRate),
-            _ => query.OrderBy(h => h.Name),
+            _ => query.OrderBy(h => h.PerNightRate),
         };
 
         var hotels = await query

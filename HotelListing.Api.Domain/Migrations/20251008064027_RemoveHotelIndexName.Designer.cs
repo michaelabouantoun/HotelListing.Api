@@ -4,6 +4,7 @@ using HotelListing.Api.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelListing.Api.Domain.Migrations
 {
     [DbContext(typeof(HotelListingDbContext))]
-    partial class HotelListingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251008064027_RemoveHotelIndexName")]
+    partial class RemoveHotelIndexName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -167,11 +170,9 @@ namespace HotelListing.Api.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HotelId", "CheckIn");
+                    b.HasIndex("HotelId");
 
-                    b.HasIndex("HotelId", "TotalPrice");
-
-                    b.HasIndex("UserId", "HotelId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Bookings");
                 });
@@ -228,9 +229,7 @@ namespace HotelListing.Api.Domain.Migrations
 
                     b.HasIndex("PerNightRate");
 
-                    b.HasIndex("CountryId", "PerNightRate");
-
-                    b.HasIndex("CountryId", "Rating");
+                    b.HasIndex("Rating");
 
                     b.ToTable("Hotels");
                 });

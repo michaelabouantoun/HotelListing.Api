@@ -10,8 +10,8 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(q => q.Status)
             .HasConversion<string>()
             .HasMaxLength(20);
-        builder.HasIndex(x => x.UserId); //speed up operations relative to queries being filtered on those columns
-        builder.HasIndex(x => x.HotelId);
-        builder.HasIndex(x => new { x.CheckIn, x.CheckOut });
+        builder.HasIndex(x => new { x.UserId,x.HotelId });
+        builder.HasIndex(x => new { x.HotelId, x.CheckIn });
+        builder.HasIndex(x => new { x.HotelId, x.TotalPrice });
     }
 }
