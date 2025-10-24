@@ -13,7 +13,9 @@ public class HotelMappingProfile : Profile
         CreateMap<Hotel, GetHotelDto>()
          .ForMember(d => d.Country, opt => opt.MapFrom(src => src.Country != null ? src.Country.Name : string.Empty)); //need to handle this
         CreateMap<CreateHotelDto, Hotel>();
-        CreateMap<UpdateHotelDto, Hotel>();
+        CreateMap<UpdateHotelDto, Hotel>()
+            .ReverseMap();
+
         CreateMap<Hotel, GetHotelSlimDto>();
 
 
@@ -29,7 +31,11 @@ public class CountryMappingProfile : Profile
         CreateMap<Country, GetCountriesDto>()
         .ForMember(d => d.Id, cfg => cfg.MapFrom(src => src.CountryId));
         CreateMap<CreateCountryDto, Country>();
-        CreateMap<UpdateCountryDto, Country>();
+        CreateMap<Country, UpdateCountryDto>()
+            .ForMember(d => d.Id, cfg => cfg.MapFrom(src => src.CountryId))
+            .ReverseMap()
+            .ForMember(d => d.CountryId, cfg => cfg.MapFrom(src => src.Id));
+
 
 
     }

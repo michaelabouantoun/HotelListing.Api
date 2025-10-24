@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using HotelListing.Api.Application.Contracts;
+using HotelListing.Api.Application.DTOs.Country;
 using HotelListing.Api.Application.DTOs.Hotel;
 using HotelListing.Api.Common.Constants;
 using HotelListing.Api.Common.Models.Extensions;
@@ -8,11 +9,13 @@ using HotelListing.Api.Common.Models.Filtering;
 using HotelListing.Api.Common.Models.Paging;
 using HotelListing.Api.Common.Results;
 using HotelListing.Api.Domain;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Metrics;
 
 namespace HotelListing.Api.Application.Services;
 
-public class HotelsService(HotelListingDbContext context, ICountriesService countriesService, IMapper mapper) : IHotelsService
+public class HotelsService(HotelListingDbContext context, ICountriesService countriesService, IMapper mapper) : BaseService, IHotelsService
 {
     public async Task<Result<PagedResult<GetHotelDto>>> GetHotelsAsync(PaginationParameters paginationParameters
         , HotelFilterParameters filters)
@@ -136,5 +139,32 @@ public class HotelsService(HotelListingDbContext context, ICountriesService coun
         return await context.Hotels
             .AsNoTracking()
             .FirstOrDefaultAsync(h => h.Id == id);
+    }
+
+    public async Task<Result> PatchHotelAsync(int id, JsonPatchDocument<UpdateHotelDto> patchDoc)
+    {
+        var hotel = await context.Hotels.FindAsync(id);
+        if (hotel == null)
+        {
+            return Result.NotFound(new Error(ErrorCodes.NotFound, $"Hotel '{id}' was not found."));
+        }
+        var hotelDto = mapper.Map<UpdateHotelDto>(hotel); //for security purpose
+        patchDoc.ApplyTo(hotelDto);
+        if (hotelDto.Id != id)
+        {
+            return Result.BadRequest(new Error(ErrorCodes.Validation, "Cannot modify the Id field."));
+        }
+        if (!ValidateDto(hotelDto))
+        {
+            return Result.BadRequest(new Error(ErrorCodes.Validation, "Invalid data."));
+        }
+        var countryExists = await countriesService.CountryExistsAsync(hotelDto.CountryId);
+        if (!countryExists)
+        {
+            return Result.NotFound(new Error(ErrorCodes.NotFound, $"Country {hotelDto.CountryId} was not found"));
+        }
+        mapper.Map(hotelDto, hotel);
+        await context.SaveChangesAsync();
+        return Result.Success();
     }
 }

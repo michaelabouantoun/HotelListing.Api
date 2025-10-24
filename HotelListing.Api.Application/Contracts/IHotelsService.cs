@@ -3,6 +3,7 @@ using HotelListing.Api.Common.Models.Filtering;
 using HotelListing.Api.Common.Models.Paging;
 using HotelListing.Api.Common.Results;
 using HotelListing.Api.Domain;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace HotelListing.Api.Application.Contracts;
 
@@ -16,4 +17,6 @@ public interface IHotelsService
     Task<bool> HotelExistsAsync(int id);
     Task<Hotel?> HotelObjectExistsAsync(int id);
     Task<Result> UpdateHotelAsync(int id, UpdateHotelDto updateDto);
+    Task<Result> PatchHotelAsync(int id, JsonPatchDocument<UpdateHotelDto> patchDocument);
+
 }

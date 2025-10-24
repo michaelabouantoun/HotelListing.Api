@@ -9,11 +9,12 @@ using HotelListing.Api.Common.Models.Filtering;
 using HotelListing.Api.Common.Models.Paging;
 using HotelListing.Api.Common.Results;
 using HotelListing.Api.Domain;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelListing.Api.Application.Services;
 
-public class CountriesService(HotelListingDbContext context, IMapper mapper) : ICountriesService
+public class CountriesService(HotelListingDbContext context, IMapper mapper) :BaseService, ICountriesService
 {
     public async Task<Result<IEnumerable<GetCountriesDto>>> GetCountriesAsync(CountryFilterParameters filters)
     {
@@ -129,6 +130,27 @@ public class CountriesService(HotelListingDbContext context, IMapper mapper) : I
             Hotels = pagedHotels
         };
         return Result<GetCountryHotelsDto>.Success(result);
+    }
+
+    public async Task<Result> PatchCountryAsync(int id, JsonPatchDocument<UpdateCountryDto> patchDoc)
+    {
+        var country=await context.Countries.FindAsync(id);
+        if (country == null) {
+            return Result.NotFound(new Error(ErrorCodes.NotFound, $"Country '{id}' was not found."));
+        }
+        var countryDto=mapper.Map<UpdateCountryDto>(country); //for security purpose
+        patchDoc.ApplyTo(countryDto);
+        if (countryDto.Id != id)
+        {
+            return Result.BadRequest(new Error(ErrorCodes.Validation, "Cannot modify the Id field."));
+        }
+        if (!ValidateDto(countryDto)) {
+            return Result.BadRequest(new Error(ErrorCodes.Validation, "Invalid data."));
+        }
+        mapper.Map(countryDto, country);
+        await context.SaveChangesAsync();
+        return Result.Success();
+
     }
 }
 

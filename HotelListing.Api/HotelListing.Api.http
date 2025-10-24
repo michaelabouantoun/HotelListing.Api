@@ -1,8 +1,8 @@
 @HotelListing.Api_HostAddress = https://localhost:7238
 @apikey=ac123
 @json=application/json
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzMWExMzFkOC0zMGM5LTQ5OWUtOGNhYS0xYWFjOWQ5NDA3NDUiLCJlbWFpbCI6IkFkbWluQWRtaW5AbG9jYWxob3N0LmNvbSIsImp0aSI6IjQ5ODA3NjZjLTExMGUtNDNjMy05YmQ5LWVhOTRkN2Q5MGRmNiIsIm5hbWUiOiJhZG1pbiwgYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbmlzdHJhdG9yIiwiZXhwIjoxNzU5NTk2NzAwLCJpc3MiOiJIb3RlbExpc3RpbmdBUEkiLCJhdWQiOiJIb3RlbExpc3RpbmdBUElDbGllbnQifQ.3WHUpXALlFjOQLukBuyEA8F53GuBGBiaFtotFIXH_LA
-GET {{HotelListing.Api_HostAddress}}/api/countries?search=e&sortby=name
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzMWExMzFkOC0zMGM5LTQ5OWUtOGNhYS0xYWFjOWQ5NDA3NDUiLCJlbWFpbCI6IkFkbWluQWRtaW5AbG9jYWxob3N0LmNvbSIsImp0aSI6ImFhZTJmMjFmLTlhMWQtNDJiZC1hMDhmLTA1YjYzNzZiMmJhYiIsIm5hbWUiOiJhZG1pbiwgYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbmlzdHJhdG9yIiwiZXhwIjoxNzYxMjk3NzUwLCJpc3MiOiJIb3RlbExpc3RpbmdBUEkiLCJhdWQiOiJIb3RlbExpc3RpbmdBUElDbGllbnQifQ.y9-A2wW1rhqDz2U8-Q_GULaTDrA4NwIE1N1EfqXlclw
+GET {{HotelListing.Api_HostAddress}}/api/countries
 Authorization: Bearer {{token}}
 #X-Api-Key:{{apikey}}
 
@@ -18,14 +18,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzAxMTBmM
 }
 
 ###
-@id=52
+@id=28
 DELETE {{HotelListing.Api_HostAddress}}/api/countries/{{id}}
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3MjE4YWU0OC00MDA5LTQ3MmMtYTViNy1kMDRjNGIyYWQzNmQiLCJlbWFpbCI6ImNoYXJiZWxAbG9jYWxob3N0LmNvbSIsImp0aSI6IjEwYTQwNTc4LTA5OGMtNDczZi1hMDg5LTdjYmRhNGE0MzZmZSIsIm5hbWUiOiJBYm91IEFudG91biwgQ2hhcmJlbCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3NTg2NDg3NDcsImlzcyI6IkhvdGVsTGlzdGluZ0FQSSIsImF1ZCI6IkhvdGVsTGlzdGluZ0FQSUNsaWVudCJ9.kC4AuxMVg1NuaY7SOD8TK6IRcR5GfLOm9rAHmEE7jpY
 
 
 ###
 GET {{HotelListing.Api_HostAddress}}/api/countries/{{id}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzMWExMzFkOC0zMGM5LTQ5OWUtOGNhYS0xYWFjOWQ5NDA3NDUiLCJlbWFpbCI6IkFkbWluQWRtaW5AbG9jYWxob3N0LmNvbSIsImp0aSI6IjI3Yjg5ZGM0LTVkYTgtNGQ4NC04ZWFmLTI0NWY3ZGY2YWJlNiIsIm5hbWUiOiJhZG1pbiwgYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbmlzdHJhdG9yIiwiZXhwIjoxNzU5MTYxOTMzLCJpc3MiOiJIb3RlbExpc3RpbmdBUEkiLCJhdWQiOiJIb3RlbExpc3RpbmdBUElDbGllbnQifQ.BXU85SaRyNzgfThLLCdGWFoePA-eAGbP-ulut3_lVZo
+Authorization: Bearer {{token}}
 
 ###
 
@@ -38,10 +38,32 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzAxMTBmM
  "name":"Lebanon",
   "shortName":"lb"
 }
+###
+PATCH {{HotelListing.Api_HostAddress}}/api/countries/{{id}}
+Authorization: Bearer {{token}}
+Content-Type:application/json-patch+json
+[ 
+  { 
+    "op":"replace",
+    "path":"/shortName",
+    "value":"LB"
+  }
+]
+###
+PATCH {{HotelListing.Api_HostAddress}}/api/hotels/{{id}}
+Authorization: Bearer {{token}}
+Content-Type:application/json-patch+json
+[ 
+  { 
+    "op":"replace",
+    "path":"/countryid",
+    "value":10000
+  }
+]
 
 ###
 
-GET {{HotelListing.Api_HostAddress}}/api/hotels?pageNumber=2&pagesize=20&minRating=4.8
+GET {{HotelListing.Api_HostAddress}}/api/hotels
 Authorization: Bearer {{token}}
 
 

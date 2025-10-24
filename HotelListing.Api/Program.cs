@@ -61,8 +61,8 @@ builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IApiKeyValidatorService, ApiKeyValidatorService>();
 builder.Services.AddAutoMapper(cfg => { }, typeof(HotelMappingProfile).Assembly);//instead of trying to list every single configuration, i am simply saying load all conf from the execution assembly so automapper will look through any class that is inherited from :Profile and apply it
 builder.Services.AddControllers()
-
-    .AddJsonOptions(opt => { opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles; });
+                .AddNewtonsoftJson()
+                .AddJsonOptions(opt => { opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles; });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 

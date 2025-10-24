@@ -1,9 +1,11 @@
-﻿using HotelListing.Api.Application.Contracts;
+﻿using Azure;
+using HotelListing.Api.Application.Contracts;
 using HotelListing.Api.Application.DTOs.Country;
 using HotelListing.Api.Common.Constants;
 using HotelListing.Api.Common.Models.Filtering;
 using HotelListing.Api.Common.Models.Paging;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelListing.Api.Controllers;
@@ -51,6 +53,18 @@ public class CountriesController(ICountriesService countriesService) : BaseApiCo
 
         return ToActionResult(result);
     }
+    // PATCH: api/Countries/5
+    [HttpPatch("{id}")]
+    [Authorize(Roles = RoleNames.Administrator)]
+    public async Task<IActionResult> PatchCountry(int id, [FromBody] JsonPatchDocument<UpdateCountryDto> patchDoc)
+    {
+        if (patchDoc == null) { 
+        return BadRequest("Patch document is required.");
+        }
+        var result=await countriesService.PatchCountryAsync(id, patchDoc);
+        return ToActionResult(result);
+    }
+
 
     // POST: api/Countries
 
