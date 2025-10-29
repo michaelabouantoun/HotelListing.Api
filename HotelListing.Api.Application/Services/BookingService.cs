@@ -195,7 +195,9 @@ public class BookingService(HotelListingDbContext context, IUsersService usersSe
     }
     private IQueryable<Booking> ApplyFilters(int hotelId, BookingFilterParameters filters)
     {
-        var query = context.Bookings.Where(b => b.HotelId == hotelId);
+        var query = context.Bookings
+            .AsNoTracking()
+            .Where(b => b.HotelId == hotelId);
         if (filters.Status.HasValue)
             query = query.Where(b => b.Status == filters.Status.Value);
         if (filters.CheckInFrom.HasValue)

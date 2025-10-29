@@ -18,7 +18,8 @@ public class CountriesService(HotelListingDbContext context, IMapper mapper) :Ba
 {
     public async Task<Result<IEnumerable<GetCountriesDto>>> GetCountriesAsync(CountryFilterParameters filters)
     {
-        var query = context.Countries.AsQueryable();
+        var query = context.Countries.AsNoTracking()
+                                     .AsQueryable();
         if (!string.IsNullOrWhiteSpace(filters.Search))
         {
             var term = filters.Search.Trim();
@@ -33,8 +34,9 @@ public class CountriesService(HotelListingDbContext context, IMapper mapper) :Ba
     public async Task<Result<GetCountryDto>> GetCountryAsync(int id)
     {
         var country = await context.Countries
+            .AsNoTracking()
             .Where(q => q.CountryId == id)
-            .ProjectTo<GetCountryDto>(mapper.ConfigurationProvider) //error provider handled
+            .ProjectTo<GetCountryDto>(mapper.ConfigurationProvider)
             .FirstOrDefaultAsync();
         return country is null
             ? Result<GetCountryDto>.NotFound(new Error(ErrorCodes.NotFound, $"Country with this id = {id} not found"))
@@ -96,6 +98,7 @@ public class CountriesService(HotelListingDbContext context, IMapper mapper) :Ba
         , CountryFilterParameters filters)
     {
         var countryName = await context.Countries
+            .AsNoTracking()
             .Where(q => q.CountryId == countryId)
             .Select(q => q.Name)
             .FirstOrDefaultAsync();
@@ -106,6 +109,7 @@ public class CountriesService(HotelListingDbContext context, IMapper mapper) :Ba
         }
         //ghyrt
         var hotelsQuery = context.Hotels
+            .AsNoTracking ()
             .Where(h => h.CountryId == countryId)
             .AsQueryable();
         if (!string.IsNullOrWhiteSpace(filters.Search))

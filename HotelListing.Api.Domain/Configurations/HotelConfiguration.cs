@@ -10,6 +10,5 @@ public class HotelConfiguration : IEntityTypeConfiguration<Hotel>
         builder.HasIndex(h => h.PerNightRate);
         builder.HasIndex(h => new { h.CountryId, h.PerNightRate });
         builder.HasIndex(h => new { h.CountryId, h.Rating });
-        builder.HasIndex(h => h.CountryId);
     }
 }

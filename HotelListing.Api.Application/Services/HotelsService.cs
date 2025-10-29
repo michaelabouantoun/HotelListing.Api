@@ -20,7 +20,9 @@ public class HotelsService(HotelListingDbContext context, ICountriesService coun
     public async Task<Result<PagedResult<GetHotelDto>>> GetHotelsAsync(PaginationParameters paginationParameters
         , HotelFilterParameters filters)
     {
-        var query = context.Hotels.AsQueryable();
+        var query = context.Hotels
+            .AsNoTracking()
+            .AsQueryable();
         if (filters.CountryId.HasValue)
         {
             query = query.Where(q => q.CountryId == filters.CountryId);
@@ -34,11 +36,18 @@ public class HotelsService(HotelListingDbContext context, ICountriesService coun
         if (filters.MaxPrice.HasValue)
             query = query.Where(h => h.PerNightRate <= filters.MaxPrice.Value);
         if (!string.IsNullOrWhiteSpace(filters.Location))
-            query = query.Where(h => h.Address.Contains(filters.Location));
+        {
+            var location = filters.Location.Trim();
+
+            query = query.Where(h => EF.Functions.Like(h.Address, $"%{location}%"));
+        }
         //generic search param
         if (!string.IsNullOrWhiteSpace(filters.Search))
-            query = query.Where(h => h.Name.Contains(filters.Search) ||
-                                    h.Address.Contains(filters.Search));
+        {
+            var search=filters.Search.Trim();
+            query = query.Where(h => EF.Functions.Like(h.Name, $"%{search}%") ||
+                                   EF.Functions.Like(h.Address, $"%{search}%"));
+        }
         query = filters.SortBy?.ToLower() switch
         {
             "rating" => filters.SortDescending ?
@@ -57,6 +66,7 @@ public class HotelsService(HotelListingDbContext context, ICountriesService coun
     public async Task<Result<GetHotelDto>> GetHotelAsync(int id)
     {
         var hotel = await context.Hotels
+           .AsNoTracking()
            .Where(h => h.Id == id)
            .ProjectTo<GetHotelDto>(mapper.ConfigurationProvider)
            .FirstOrDefaultAsync();

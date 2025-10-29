@@ -13,11 +13,27 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the IoC container.
 
 var connectionString = builder.Configuration.GetConnectionString("HotelListingDbConnectionString");
-builder.Services.AddDbContext<HotelListingDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContextPool<HotelListingDbContext>(options =>
+{
+    options.UseSqlServer(connectionString, sqloptions =>
+    {
+        sqloptions.CommandTimeout(30);
+        sqloptions.EnableRetryOnFailure(
+            maxRetryCount: 3,
+            maxRetryDelay: TimeSpan.FromSeconds(5),
+            errorNumbersToAdd: null
+            );
+    });
+    if (builder.Environment.IsDevelopment())
+    {
+
+        options.EnableSensitiveDataLogging();
+        options.EnableDetailedErrors();
+    }
+},poolSize: 128);
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options => { })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<HotelListingDbContext>();
