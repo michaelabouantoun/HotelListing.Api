@@ -7,17 +7,17 @@ using HotelListing.Api.Common.Models.Paging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.OutputCaching;
 namespace HotelListing.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
 public class CountriesController(ICountriesService countriesService) : BaseApiController
 {
 
     // GET: api/Countries
     [HttpGet]
+    [OutputCache(PolicyName ="CustomPolicy")]
 
     public async Task<ActionResult<IEnumerable<GetCountriesDto>>> GetCountries([FromQuery] CountryFilterParameters filters)
     {
@@ -34,7 +34,6 @@ public class CountriesController(ICountriesService countriesService) : BaseApiCo
         var result = await countriesService.GetCountryHotelsAsync(countryId, paginationParameters, filters);
         return ToActionResult(result);
     }
-
 
     // GET: api/Countries/5
     [HttpGet("{id}")]

@@ -1,6 +1,7 @@
 using HotelListing.Api.Application.Contracts;
 using HotelListing.Api.Application.MappingProfiles;
 using HotelListing.Api.Application.Services;
+using HotelListing.Api.CachePolicies;
 using HotelListing.Api.Common.Constants;
 using HotelListing.Api.Common.Models.Config;
 using HotelListing.Api.Domain;
@@ -8,6 +9,7 @@ using HotelListing.Api.Handlers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -81,7 +83,11 @@ builder.Services.AddControllers()
                 .AddJsonOptions(opt => { opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles; });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
+//builder.Services.AddMemoryCache();
+builder.Services.AddOutputCache(options =>
+{
+    options.AddPolicy(CacheConstants.AuthenticatedUserCachingPolicy, builder => { builder.AddPolicy<AuthenticatedUserCachingPolicy>().SetCacheKeyPrefix(CacheConstants.AuthenticatedUserCachingPolicyTag); }, true);
+});
 var app = builder.Build();
 app.MapGroup("api/defaultauth").MapIdentityApi<ApplicationUser>();
 // Configure the HTTP request pipeline.
@@ -93,6 +99,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseOutputCache();
 
 app.MapControllers();
 
