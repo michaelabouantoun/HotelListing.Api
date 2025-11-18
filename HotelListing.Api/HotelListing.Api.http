@@ -20,7 +20,7 @@ Authorization: Bearer {{token}}
 }
 
 ###
-@id=248
+@id=57
 DELETE {{HotelListing.Api_HostAddress}}/api/countries/{{id}}
 Authorization: Bearer {{token}}
 
