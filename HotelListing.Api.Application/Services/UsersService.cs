@@ -7,6 +7,7 @@ using HotelListing.Api.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -14,7 +15,12 @@ using System.Security.Claims;
 using System.Text;
 namespace HotelListing.Api.Application.Services;
 
-public class UsersService(UserManager<ApplicationUser> userManager, IOptions<JwtSettings> jwtOptions, IHttpContextAccessor httpContextAccessor, HotelListingDbContext hotelListingDbContext) : IUsersService
+public class UsersService(
+    UserManager<ApplicationUser> userManager,
+    IOptions<JwtSettings> jwtOptions,
+    IHttpContextAccessor httpContextAccessor,
+    HotelListingDbContext hotelListingDbContext,
+    ILogger<UsersService> logger) : IUsersService
 {
     public async Task<Result<RegisteredUserDto>> RegisterAsync(RegisterUserDto registerUserDto)
     {
@@ -30,6 +36,7 @@ public class UsersService(UserManager<ApplicationUser> userManager, IOptions<Jwt
         if (!result.Succeeded)
         {
             var errors = result.Errors.Select(e => new Error(ErrorCodes.BadRequest, e.Description)).ToArray();
+            logger.LogError("User registration failed for {Email}: {Errors}", registerUserDto.Email,string.Join(", ",errors));
             return Result<RegisteredUserDto>.BadRequest(errors);
         }
         await userManager.AddToRoleAsync(user, registerUserDto.Role);
@@ -67,6 +74,7 @@ public class UsersService(UserManager<ApplicationUser> userManager, IOptions<Jwt
         var user = await userManager.FindByEmailAsync(loginUserDto.Email);
         if (user == null)
         {
+            logger.LogWarning("Failed login attempt for email: {Email}",loginUserDto.Email);
             return Result<string>.Failure(new Error(ErrorCodes.BadRequest, "Invalid credentials"));
         }
         var isPasswordValid = await userManager.CheckPasswordAsync(user, loginUserDto.Password); //note: because the object is tracked this method it doesnt refetch from the memory (why async? only for API consistency because other UserManager methods usually hits the store

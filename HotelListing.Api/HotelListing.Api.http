@@ -20,7 +20,7 @@ Authorization: Bearer {{token}}
 }
 
 ###
-@id=57
+@id=577
 DELETE {{HotelListing.Api_HostAddress}}/api/countries/{{id}}
 Authorization: Bearer {{token}}
 
@@ -136,7 +136,7 @@ Content-Type: application/json
 
 {
  "email": "AdminAdmin@localhost.com",
-  "password": "P@ssword1"
+  "password": "P@ssword"
 }
 
 ###
